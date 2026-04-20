@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<div class="container my-4">
+    <div class="row">
+
+        <!--LEFT-->
+        <div class="col-md-8">
+            <div class="card p-4 shadow-sm">
+                <h5 class="mb-3"> Add Task</h5>
+
+                <form action="/" method="POST">
+
+                    <input type="text" class="form-control mb-2" name="title" placeholder="Title" required>
+                    <input type="text" class="form-control mb-2" name="desc" placeholder="Description" required>
+                    <input type="datetime-local" class="form-control mb-3" name="deadline">
+
+                    <button type="submit" class="btn btn-outline-primary btm-sm mx-1">Add</button>
+
+                </form>
+            </div>
+        </div>
+
+        <!--RIGHT-->
+        <div class="col-md-4">
+            <div class="card shadow-sm p-4">
+                <h5>Summary</h5>
+
+                <p>Total: <b>{{ total }}</b></p>
+                <p>Completed: <b>{{ completed }}</b></p>
+                <p>Pending: <b>{{ total - completed }}</b></p>
+            </div>
+        </div>
+
+        <!--Progress Circle-->
+        
+
+    </div>
+</div>
+
+<!--
+<div class="container my-4" style="max-width: 700px; margin-left: 50px;">
+    <div class="card shadow-lg p-4">
+        <h3 class="mb-3">Add New Task</h3>
+            <form action="/" method="POST">
+                <div class="mb-3">
+                    <label for="title" class="form-label">ToDo title</label>
+                    <input type="text" class="form-control" name="title" id="title" required>
+                    <div id="emailHelp" class="form-text">name your ToDo task</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="desc" class="form-label"> ToDo Description </label>
+                    <input type="text" class="form-control" name="desc" id="desc" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="deadline" class="form-label">Deadline</label>
+                    <input type="datetime-local" class="form-control" name="deadline" id="deadline">
+                </div>
+
+                <button type="submit" class="btn btn-outline-primary mt-2">Add Task</button>
+            </form>
+    </div>
+</div>
+-->
+
+<!--
+my-3	top + bottom margin
+mb-3	bottom margin only
+mt-3	top margin only
+mx-3	left + right margin
+-->
+<div class="container my-4">
+    <h2>Your ToDo:</h2>
+
+    {% if total > 0 %}
+        <div class="mb-3" style="max-width: 500px;">
+            <div class="progress">
+                <div class="progress-bar bg-success" 
+                    style="width: {{ (completed * 100 // total) if total else 0 }}%;">
+                {{ completed }}/{{ total }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <a href="/" class="btn btn-outline-secondary">All</a>
+        <a href="/?filter=completed" class="btn btn-outline-success">Completed</a>
+        <a href="/?filter=pending" class="btn btn-outline-warning">Pending</a>
+        <a href="/?filter=overdue" class="btn btn-outline-danger">Overdue</a>
+    </div>
+
+    {% if request.args.get('search') %}
+    <p>Showing results for: <b>{{ request.args.get('search') }}</b></p>
+    {% endif %}
+
+    {% if alltodo|length == 0 %}
+    <div class="alert alert-info" role="alert">
+
+        {% if request.args.get('search') %}
+        No results found for "<b>{{ request.args.get('search') }}</b>"
+
+        {% elif request.args.get('filter') == 'completed' %}
+        No completed tasks yet
+
+        {% elif request.args.get('filter') == 'pending' %}
+        No pending tasks
+
+        {% elif request.args.get('filter') == 'overdue' %}
+        No overdue tasks 🎉
+
+        {% else %}
+        No Record found. Add your first ToDo now!
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+    <table class="table table-hover align-middle shadow-sm">
+        <thead>
+            <tr>
+                <th scope="col">SNo.</th>
+                <th scope="col">Title</th>
+                <th scope="col">Description</th>
+                <th scope="col">Date</th>
+                <th scope="col">Deadline</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for todo in alltodo %}
+            <tr>
+                <th scope="row">{{loop.index}}</th>
+                <!--<td>{{todo.title}}</td>
+                <td>{{todo.desc}}</td> -->
+
+                <td>
+                    <span class="{% if todo.completed %}text-decoration-line-through text-muted{% endif %}">
+                        {{todo.title}}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="{% if todo.completed %}text-decoration-line-through text-muted{% endif %}">
+                        {{todo.desc}}
+                    </span>
+                </td>
+                <td>{{todo.date_created}}</td>
+
+                <td>
+                    {% if todo.deadline %}
+                    {{ todo.deadline.strftime('%d %b %Y, %I:%M %p') }}
+                    {% else %}
+                    No deadline
+                    {% endif %}
+                </td>
+                <td><a href="/complete/{{todo.sno}}" class="btn btn-outline-success btm-sm mx-1">
+                        {% if todo.completed %} Undo {% else %} Done {% endif %}</a>
+                    <a href="Update/{{todo.sno}}" class="btn btn-outline-primary btm-sm mx-1">Update</a>
+                    <a href="Delete/{{todo.sno}}" onclick="return confirm('Delete: {{todo.title}} ?')"
+                        class="btn btn-outline-danger btm-sm mx-1">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+
+</html>
+{% endblock body %}

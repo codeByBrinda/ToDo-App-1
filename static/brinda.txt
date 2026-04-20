@@ -1,0 +1,15 @@
+hii my name is brinda. i love bubbles. i like dancing.
+
+The static folder is used to store and serve unchanging files efficiently,
+ separately, and faster without involving Flask logic.
+
+ Static files can be cached by the browser
+So they don’t reload every time
+
+Improves speed a lotStatic files can be cached by the browser
+So they don’t reload every time
+Improves speed a lot.
+
+Code → in app.py
+UI files → in templates
+Fixed assets → in static
